@@ -62,6 +62,8 @@ chmod 644 ~/.ssh/ansible_key.pub
 
 ## 3. Запуск управляемого контейнера в Docker
 Перенесли готовые файлы **Dockerfile** и **docker-compose.yml**
+
+
 <img width="1192" height="698" alt="image" src="https://github.com/user-attachments/assets/d2904a8e-6f4a-414d-8ffc-7561be09ed84" />
 
 Собрали и запустили контейнер в фоновом режиме
