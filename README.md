@@ -1,5 +1,6 @@
 # Лабораторная работа: Основы Ansible в DevOps
 
+## Ход работы.
 ---
 
 ## 1. Установка Ansible на управляющую машину (Linux/WSL)
@@ -128,92 +129,61 @@ exit
 
 ## 5. Создание инвентарного файла Ansible (inventory)
 
-Инвентарный файл описывает, какие машины управляет Ansible.
 
-### Шаг 5.1: Создание файла `inventory.ini`
+Проверили созданный ранее файл 'inventory.ini' с помощью команды:
 
-Создайте файл `inventory.ini` в рабочей директории:
-```ini
-[managed_hosts]
-managed1 ansible_host=localhost ansible_port=2222 ansible_user=ansible ansible_ssh_private_key_file=~/.ssh/ansible_key ansible_python_interpreter=/usr/bin/python3
-
-[all:vars]
-ansible_ssh_common_args=-o StrictHostKeyChecking=no
-```
-
-**Объяснение параметров:**
-- `[managed_hosts]` - группа хостов (можно иметь несколько групп)
-- `managed1` - имя хоста в инвентаре (локальное имя, не обязательно реальное)
-- `ansible_host=localhost` - IP адрес или FQDN реального хоста
-- `ansible_port=2222` - порт SSH (из docker-compose)
-- `ansible_user=ansible` - пользователь для подключения
-- `ansible_ssh_private_key_file` - путь к приватному SSH ключу
-- `ansible_python_interpreter` - путь к интерпретатору Python на управляемом хосте
-- `ansible_ssh_common_args` - отключает проверку ключа хоста (для первого подключения)
-
-### Шаг 5.2: Проверка инвентаря
 ```bash
 ansible-inventory -i inventory.ini --list
 ```
+Результат на рисунке ниже.
 
-Ожидаемый вывод (JSON формат):
-```json
-{
-    "_meta": {
-        "hostvars": {
-            "managed1": {
-                "ansible_host": "localhost",
-                "ansible_port": "2222",
-                ...
-            }
-        }
-    },
-    "all": {...},
-    "managed_hosts": {...},
-    "ungrouped": {}
-}
-```
+
+<img width="1280" height="675" alt="image" src="https://github.com/user-attachments/assets/29adbfb0-4e1e-4cf2-9ce1-0d10ce3f27b9" />
+
+
 
 ---
 
 ## 6. Проверка подключения Ansible к управляемому хосту
 
-### Шаг 6.1: Тест ping
+Протестировали ping
+
+
 ```bash
 ansible -i inventory.ini managed_hosts -m ping
 ```
 
-Ожидаемый вывод:
-```
-managed1 | SUCCESS => {
-    "changed": false,
-    "ping": "pong"
-}
-```
+<img width="1280" height="124" alt="image" src="https://github.com/user-attachments/assets/194bfa9d-a43f-4cb5-a6af-9897e859a6ee" />
 
-### Шаг 6.2: Сбор информации о системе (facts)
+
+
+Собрали информацию о системе:
+
 ```bash
 ansible -i inventory.ini managed1 -m setup
 ```
 
-Выведет всю информацию о системе управляемого хоста.
+Вывод на экране:
 
-### Шаг 6.3: Выполнение простой команды
+<img width="1280" height="507" alt="image" src="https://github.com/user-attachments/assets/dfb4cb0f-8790-41c3-b162-05d612d956d8" />
+
+
+
+Выполнили простую команду:
+
 ```bash
 ansible -i inventory.ini managed1 -m command -a "uname -a"
 ```
 
-Ожидаемый вывод:
-```
-managed1 | CHANGED | rc=0 >>
-Linux f3a4c8b0c4a2 5.15.0-92-generic #102-Ubuntu SMP Thu Jan 9 10:54:01 UTC 2025 x86_64 GNU/Linux
-```
+
+<img width="1280" height="139" alt="image" src="https://github.com/user-attachments/assets/d8e65084-fcc8-4267-a726-a112f962eef6" />
+
 
 ---
 
 ## 7. Создание и запуск Ansible Playbook
 
-### Шаг 7.1: Структура проекта
+Структура проекта выглядит следующим образом:
 ```
 project/
 ├── Dockerfile
@@ -223,90 +193,58 @@ project/
 └── README.md
 ```
 
-### Шаг 7.2: Создание playbook.yml
-Используйте готовый playbook из раздела "Готовые файлы" ниже.
+Использовали готовый playbook из методических указаний и запустили playbook
 
-### Шаг 7.3: Запуск playbook
 ```bash
 # Запуск playbook
 ansible-playbook -i inventory.ini playbook.yml
 ```
+Результат на рисунке:
 
-### Шаг 7.4: Вывод playbook
-```
-PLAY [managed_hosts] ************************************************************
 
-TASK [Gathering Facts] **********************************************************
-ok: [managed1]
+<img width="1280" height="572" alt="image" src="https://github.com/user-attachments/assets/c19b14db-cd40-49b8-ab3b-3dcbb059858e" />
 
-TASK [Update package list] ******************************************************
-changed: [managed1]
 
-TASK [Install required packages] ************************************************
-changed: [managed1]
-
-TASK [Create test directory] ****************************************************
-changed: [managed1]
-
-TASK [Create test file with content] ********************************************
-changed: [managed1]
-
-TASK [Display file content] *****************************************************
-ok: [managed1] => {
-    "msg": "File content from managed host: Hello from Ansible!\nThis is a test file created by Ansible playbook."
-}
-
-TASK [Get system information] ***************************************************
-ok: [managed1] => {
-    "msg": "System: Linux, Hostname: f3a4c8b0c4a2, Uptime: 12 min"
-}
-
-PLAY RECAP ************************************************************
-managed1 : ok=7 changed=4 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0
-```
-
----
 
 ## 8. Задания для выполнения
 
 ### Задание 1: Базовое подключение
-1. Установите Ansible на вашей машине
-2. Сгенерируйте SSH ключевую пару
-3. Создайте инвентарный файл `inventory.ini`
-4. Проверьте подключение командой `ansible-inventory --list`
-5. Выполните ping к управляемому хосту
-
-**Ожидаемый результат:** успешный ответ "pong" от управляемого хоста
+Задание 1 было выполнено в ходе выполнения первых 7 шагов.
 
 ---
 
 ### Задание 2: Базовые ad-hoc команды
-1. Получите информацию о ядрах CPU управляемого хоста:
+1. Получили информацию о ядрах CPU управляемого хоста:
    ```bash
    ansible -i inventory.ini managed1 -m setup -a "filter=ansible_processor_cores"
    ```
 
-2. Проверьте свободное место на диске:
+2. Проверили свободное место на диске:
    ```bash
    ansible -i inventory.ini managed1 -m command -a "df -h"
    ```
 
-3. Получите список всех пользователей:
+3. Получили список всех пользователей:
    ```bash
    ansible -i inventory.ini managed1 -m command -a "cat /etc/passwd"
    ```
 
-4. Измените временную зону хоста на UTC:
+4. Изменили временную зону хоста на UTC:
    ```bash
    ansible -i inventory.ini managed1 -m command -a "timedatectl set-timezone UTC"
    ```
 
-**Ожидаемый результат:** вывод команд без ошибок
+Вывод введенных команд представлен на изображении:
+
+
+
+<img width="1280" height="645" alt="image" src="https://github.com/user-attachments/assets/548fd42c-8a0c-4196-a802-18646d5c030d" />
+
 
 ---
 
 ### Задание 3: Работа с файлами
-1. Создайте новый playbook `task3_files.yml`:
+1. Создали новый playbook `task3_files.yml`:
    ```yaml
    ---
    - name: Work with files
@@ -345,94 +283,24 @@ managed1 : ok=7 changed=4 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0
          loop: "{{ file_content.results }}"
    ```
 
-2. Запустите playbook:
+2. Запустили playbook:
    ```bash
    ansible-playbook -i inventory.ini task3_files.yml
    ```
 
-**Ожидаемый результат:** три директории с файлами, созданные на управляемом хосте
+
+Результат представлен на изображении:
+
+
+<img width="1280" height="645" alt="image" src="https://github.com/user-attachments/assets/05ff5dd1-e795-46bc-8d7d-e1702e942959" />
+
+
 
 ---
 
-## 9. Полезные команды для отладки
+## Вывод
 
-### Проверка подключения к контейнеру
-```bash
-docker-compose ps
-docker logs ansible-managed-host
-```
+В ходе выполнения лабораторной работы установили Ansible на управляющую машину, подготовили SSH ключей для управляемых машин,запустили управляемый контейнер в Docker,
+проверили SSH подключение к контейнеру, создали инвентарный файл Ansible (inventory), проверили подключение Ansible к управляемому хосту, создали и запустили Ansible Playbook,
+а также выполнили базовые ad-hoc команды.
 
-### Подключение к контейнеру по SSH с дебаг информацией
-```bash
-ssh -v -i ~/.ssh/ansible_key -p 2222 ansible@localhost
-```
-
-### Перезагрузка контейнера
-```bash
-docker-compose restart
-```
-
-### Удаление контейнера и образа
-```bash
-docker-compose down
-docker-compose rm -f
-```
-
-### Запуск playbook с повышенной вербозностью
-```bash
-ansible-playbook -i inventory.ini playbook.yml -vvv
-```
-
-### Синтаксическая проверка playbook
-```bash
-ansible-playbook -i inventory.ini playbook.yml --syntax-check
-```
-
----
-
-## 10. Часто возникающие проблемы
-
-### Проблема: "Permission denied (publickey)"
-**Решение:**
-```bash
-# Проверьте права на приватный ключ
-chmod 600 ~/.ssh/ansible_key
-
-# Убедитесь, что публичный ключ скопирован правильно
-docker exec ansible-managed-host cat /home/ansible/.ssh/authorized_keys
-```
-
-### Проблема: "No module named 'jinja2'"
-**Решение:**
-```bash
-pip3 install jinja2
-ansible-inventory -i inventory.ini --list
-```
-
-### Проблема: "Connection refused" на порту 2222
-**Решение:**
-```bash
-# Проверьте, запущен ли контейнер
-docker ps
-
-# Пересоздайте контейнер
-docker-compose down
-docker-compose up -d
-```
-
-### Проблема: "UNREACHABLE! => {msg: 'Failed to connect to the host via ssh'"
-**Решение:**
-1. Проверьте SSH подключение вручную
-2. Убедитесь, что SSH сервис запущен в контейнере
-3. Проверьте права на файлы в `.ssh`
-
----
-
-## Дополнительные ресурсы
-
-- [Официальная документация Ansible](https://docs.ansible.com/)
-- [Ansible Best Practices](https://docs.ansible.com/ansible/latest/tips_tricks/index.html)
-- [Ansible Modules Index](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html)
-- [Docker Documentation](https://docs.docker.com/)
-
----
