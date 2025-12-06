@@ -77,21 +77,22 @@ docker-compose build
 # Запуск контейнера в фоновом режиме
 docker-compose up -d
 ```
-<img width="1280" height="367" alt="image" src="https://github.com/user-attachments/assets/ffc41496-32fd-4dc8-ae3c-be8bed82c807" />
+<img width="800" height="543" alt="image" src="https://github.com/user-attachments/assets/c3520871-ad76-4840-a60c-827c08ecdd37" />
+
+<img width="1280" height="164" alt="image" src="https://github.com/user-attachments/assets/b16466de-e66f-4990-9c49-9d3685279a13" />
 
 
-### Шаг 3.4: Проверка запущенного контейнера
+Проверили запущенный контейнер
+
+
 ```bash
 docker-compose ps
 ```
 
-Ожидаемый вывод:
-```
-NAME                    COMMAND               STATUS      PORTS
-ansible-managed-host    "/usr/sbin/sshd -D"   Up 1 min    0.0.0.0:2222->22/tcp
-```
+<img width="1280" height="182" alt="image" src="https://github.com/user-attachments/assets/b01d17db-b62b-4243-9979-25b13b91cb10" />
 
-### Шаг 3.5: Копирование публичного SSH ключа в контейнер
+
+Скопировали публичный SSH ключ в контейнер
 ```bash
 # Создаёте директорию .ssh в контейнере и копируете публичный ключ
 docker exec ansible-managed-host mkdir -p /home/ansible/.ssh
@@ -103,22 +104,25 @@ docker exec ansible-managed-host chown -R ansible:ansible /home/ansible/.ssh
 docker exec ansible-managed-host chmod 700 /home/ansible/.ssh
 docker exec ansible-managed-host chmod 600 /home/ansible/.ssh/authorized_keys
 ```
+<img width="1280" height="271" alt="image" src="https://github.com/user-attachments/assets/4629a2bb-4501-4df3-b30a-842035453dc6" />
+
 
 ---
 
 ## 4. Проверка SSH подключения к контейнеру
 
-### Шаг 4.1: Проверка SSH подключения
+Проверили SSH подключение к контейнеру с помощью следующих команд:
 ```bash
 ssh -i ~/.ssh/ansible_key -p 2222 ansible@localhost
 ```
 
-Ожидаемый результат: вы должны попасть в bash контейнера без ввода пароля.
-
-Выход из контейнера:
+Выход из контейнера из контейнера осуществляется по команде:
 ```bash
 exit
 ```
+Результаты представлены на рисунке ниже:
+<img width="1280" height="660" alt="image" src="https://github.com/user-attachments/assets/0a1b173a-9420-436b-ba52-5953fcdec80b" />
+
 
 ---
 
