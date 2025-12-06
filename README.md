@@ -1,4 +1,4 @@
-<img width="937" height="74" alt="image" src="https://github.com/user-attachments/assets/1f41c721-8d0f-4faf-8671-1682da68c7b3" /># Лабораторная работа: Основы Ansible в DevOps
+# Лабораторная работа: Основы Ansible в DevOps
 
 ---
 
@@ -55,6 +55,7 @@ chmod 600 ~/.ssh/ansible_key
 chmod 644 ~/.ssh/ansible_key.pub
 ```
 <img width="937" height="74" alt="image" src="https://github.com/user-attachments/assets/b5a558a1-835f-4be0-9994-01bbab31e6d4" />
+
 
 
 ---
